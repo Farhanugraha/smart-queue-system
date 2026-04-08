@@ -173,3 +173,13 @@ This project is designed to demonstrate:
 ---
 
 ## Use Case
+
+![btn_smart_queue_use_case.jpg](../../Users/ASUS/Downloads/btn_smart_queue_use_case.jpg)
+
+---
+
+## Design Table
+
+![btn_smart_queue_erd.jpg](../../Users/ASUS/Downloads/btn_smart_queue_erd.jpg)
+
+---
