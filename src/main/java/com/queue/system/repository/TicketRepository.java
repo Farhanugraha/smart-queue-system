@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,5 +30,15 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT COUNT(t) FROM TICKET t WHERE t.queueSession.id = :sessionId AND t.calledAt IS NULL")
     Integer countWaitingTickets(@Param("sessionId") Long sessionId);
 
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.queueSession.id = :sessionId AND t.position < :position AND t.calledAt IS NULL")
+    Integer countPositionAhead(@Param("sessionId") Long sessionId, @Param("position") Integer position);
+
+    List<Ticket> findByBookedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT t FROM Ticket t WHERE t.user.id = :userId AND DATE(t.bookedAt) = CURRENT_DATE")
+    List<Ticket> findTodayTicketsByUser(@Param("userId") Long userId);
+
+    @Query("SELECT DATE(t.bookedAt), COUNT(t) FROM Ticket t WHERE t.queueSession.service.id = :serviceId GROUP BY DATE(t.bookedAt)")
+    List<Object[]> countTicketsPerDay(@Param("serviceId") Long serviceId);
 
 }
