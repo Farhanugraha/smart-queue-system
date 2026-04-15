@@ -1,5 +1,7 @@
 package com.queue.system.dto.response;
 
+import com.queue.system.entity.Role;
+
 public class AuthResponse {
 
     private String token;
@@ -7,9 +9,9 @@ public class AuthResponse {
     private Long userId;
     private String name;
     private String email;
-    private String role;
+    private Role role;
 
-    public AuthResponse(String token, Long userId, String name, String email, String role) {
+    public AuthResponse(String token, Long userId, String name, String email, Role role) {
         this.token = token;
         this.tokenType = "bearer";
         this.userId = userId;
@@ -33,6 +35,6 @@ public class AuthResponse {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 }
