@@ -27,7 +27,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByCalledAtIsNotNullAndServedAtIsNull();
 
-    @Query("SELECT COUNT(t) FROM TICKET t WHERE t.queueSession.id = :sessionId AND t.calledAt IS NULL")
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.queueSession.id = :sessionId AND t.calledAt IS NULL")
     Integer countWaitingTickets(@Param("sessionId") Long sessionId);
 
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.queueSession.id = :sessionId AND t.position < :position AND t.calledAt IS NULL")

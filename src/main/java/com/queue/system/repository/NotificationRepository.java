@@ -15,24 +15,26 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-
     List<Notification> findByUser(User user);
 
-    List<Notification> findByUserIdOrderBySentDesc(Long userId);
+    List<Notification> findByUserIdOrderBySentAtDesc(Long userId);
 
-    List<Notification> findByUserAndIsReadFalse(Long userId);
+    List<Notification> findByUserIdAndIsReadFalse(Long userId);
 
     List<Notification> findByType(String type);
 
     List<Notification> findBySentAtBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT COUNT(n) FROM NOTIFICATION n WHERE n.user.id = :userId AND n.isRead = false")
-    void markAllAsRead(@Param("userId") Long userId);
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.user.id = :userId AND n.isRead = false")
+    long countUnreadByUserId(@Param("userId") Long userId);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Notification n SET n.isRead = true WHERE n.user.id = :userId")
+    void markAllAsRead(@Param("userId") Long userId);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Notification n WHERE n.sentAt < :cutoffDate")
     void deleteOldNotification(@Param("cutoffDate") LocalDateTime cutoffDate);
-
 }

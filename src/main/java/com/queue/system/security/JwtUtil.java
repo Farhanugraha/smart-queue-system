@@ -19,34 +19,32 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private String expiration;
+    private long expiration;
 
     public String generateToken(String email) {
-      try{
+        try {
+            byte[] signingKey = secret.getBytes();
+            JWSSigner signer = new MACSigner(signingKey);
 
-          byte[] signingKey = secret.getBytes();
-          JWSSigner signer = new MACSigner(signingKey);
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .subject(email)
+                    .issueTime(new Date())
+                    .expirationTime(new Date(System.currentTimeMillis() + expiration))  // ← sekarang valid
+                    .build();
 
-          JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                  .subject(email)
-                  .issueTime(new Date())
-                  .expirationTime(new Date(System.currentTimeMillis() + expiration))
-                  .build();
+            SignedJWT signedJWT = new SignedJWT(
+                    new JWSHeader(JWSAlgorithm.HS256),
+                    claimsSet
+            );
+            signedJWT.sign(signer);
 
-          SignedJWT  signedJWT = new SignedJWT(
-                  new JWSHeader(JWSAlgorithm.HS256),
-                  claimsSet
-          );
-          signedJWT.sign(signer);
+            return signedJWT.serialize();
 
-          return signedJWT.serialize();
-
-      } catch (KeyLengthException e) {
-          throw new RuntimeException("Secret key terlalu pendek! Minimal 32 karakter untuk HS256", e);
-      } catch (JOSEException e) {
-          throw new RuntimeException("Error creating JWT token", e);
-      }
-
+        } catch (KeyLengthException e) {
+            throw new RuntimeException("Secret key terlalu pendek! Minimal 32 karakter untuk HS256", e);
+        } catch (JOSEException e) {
+            throw new RuntimeException("Error creating JWT token", e);
+        }
     }
 
     public boolean validateToken(String token) {
@@ -54,12 +52,10 @@ public class JwtUtil {
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSVerifier verifier = new MACVerifier(secret.getBytes());
 
-            // Cek signature
             if (!signedJWT.verify(verifier)) {
                 return false;
             }
 
-            // Cek expired
             Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
             return expirationTime.after(new Date());
 
@@ -69,10 +65,10 @@ public class JwtUtil {
     }
 
     public String getEmailFromToken(String token) {
-        try{
+        try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             return signedJWT.getJWTClaimsSet().getSubject();
-        }catch (ParseException e) {
+        } catch (ParseException e) {
             throw new RuntimeException("Invalid JWT token", e);
         }
     }

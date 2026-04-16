@@ -14,18 +14,18 @@ import java.util.Optional;
 @Repository
 public interface QueSessionRepository extends JpaRepository<QueueSession, Long> {
 
-    Optional<QueueSession> findByServiceAndSessionDate(Service service, LocalDate date);
+    Optional<QueueSession> findByServiceAndLocalDate(Service service, LocalDate date);
 
-    Optional<QueueSession> findByServiceIdAndSessionDate(Long serviceId, LocalDate date);
+    Optional<QueueSession> findByServiceIdAndLocalDate(Long serviceId, LocalDate date);
 
-    List<QueueSession> findBySessionAndStatus(LocalDate date, String status);
+    List<QueueSession> findByLocalDateAndStatus(LocalDate date, String status);
 
     List<QueueSession> findByServiceAndStatus(Service service, String status);
 
-    @Query("SELECT COUNT(q) FROM QueueSession q WHERE q.sessionDate = CURRENT_DATE AND q.status = 'ACTIVE'")
+    @Query("SELECT COUNT(q) FROM QueueSession q WHERE q.localDate = CURRENT_DATE AND q.status = 'ACTIVE'")
     Long countActiveSessionsToday();
 
-    List<QueueSession> findBySessionDateBeforeAndStatus(LocalDate date, String status);
+    List<QueueSession> findByLocalDateBeforeAndStatus(LocalDate date, String status);
 
 
 

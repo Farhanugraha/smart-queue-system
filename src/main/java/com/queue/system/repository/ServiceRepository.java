@@ -16,7 +16,7 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
 
     List<Service> findByBranchId(Long branchId);
 
-    List<Service> findByBranchAndIsActive(Branch branch);
+    List<Service> findByBranchAndIsActive(Branch branch, Boolean isActive);
 
     List<Service> findByServiceType(String serviceType);
 

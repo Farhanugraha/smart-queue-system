@@ -5,16 +5,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "branch")
-
 public class Branch {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private String Location;
+    private String location;   // ← lowercase 'l'
     private String address;
     private String phone;
 
@@ -24,4 +22,6 @@ public class Branch {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
 }
