@@ -7,7 +7,7 @@ public class ForgotPasswordRequest {
 
     @NotBlank(message = "Email tidak boleh kosong!")
     @Email(message = "Format email tidak valid!")
-    String email;
+    private String email;
 
     public ForgotPasswordRequest(){}
 
