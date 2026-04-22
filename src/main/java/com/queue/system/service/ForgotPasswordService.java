@@ -1,13 +1,12 @@
 package com.queue.system.service;
 
-
 import com.queue.system.entity.PasswordResetToken;
 import com.queue.system.entity.User;
 import com.queue.system.repository.PasswordResetTokenRepository;
 import com.queue.system.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,8 +18,9 @@ public class ForgotPasswordService {
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-    public ForgotPasswordService(UserRepository userRepository, PasswordResetTokenRepository tokenRepository, PasswordEncoder passwordEncoder) {
+    public ForgotPasswordService(UserRepository userRepository,
+                                 PasswordResetTokenRepository tokenRepository,
+                                 PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
@@ -31,8 +31,7 @@ public class ForgotPasswordService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Email tidak ditemukan"));
 
-
-        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
+        tokenRepository.deleteAllByUserId(user.getId());
 
         String token = UUID.randomUUID().toString();
         LocalDateTime expiryDate = LocalDateTime.now().plusHours(1);
@@ -45,7 +44,7 @@ public class ForgotPasswordService {
 
         tokenRepository.save(resetToken);
 
-        return  token;
+        return token;
     }
 
     @Transactional
@@ -58,10 +57,6 @@ public class ForgotPasswordService {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Token tidak valid!"));
 
-        if (resetToken.isUsed()) {
-            throw new RuntimeException("Token sudah digunakan!");
-        }
-
         if (resetToken.isExpired()) {
             throw new RuntimeException("Token sudah kadaluarsa! Silakan request ulang.");
         }
@@ -69,14 +64,17 @@ public class ForgotPasswordService {
         User user = resetToken.getUser();
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-        resetToken.setUsed(true);
-        tokenRepository.save(resetToken);
+        tokenRepository.delete(resetToken);
     }
 
     public boolean validateToken(String token) {
         return tokenRepository.findByToken(token)
-                .map(resetToken -> !resetToken.isUsed() && !resetToken.isExpired())
+                .map(resetToken -> !resetToken.isExpired())
                 .orElse(false);
     }
 
+    @Transactional
+    public void cleanupExpiredTokens() {
+        tokenRepository.deleteAllExpiredTokens();
+    }
 }
