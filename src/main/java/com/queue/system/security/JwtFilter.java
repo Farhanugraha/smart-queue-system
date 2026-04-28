@@ -1,6 +1,5 @@
 package com.queue.system.security;
 
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,8 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String email = null;
         String jwt = null;
-
-
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             email = jwtUtil.getEmailFromToken(jwt);
@@ -47,6 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
             if (jwtUtil.validateToken(jwt)){
+
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
                         userDetails.getAuthorities());
 

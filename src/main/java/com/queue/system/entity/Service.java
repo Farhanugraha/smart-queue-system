@@ -1,7 +1,12 @@
 package com.queue.system.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "service")
 

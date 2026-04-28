@@ -1,9 +1,13 @@
 package com.queue.system.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "ticket")
 public class Ticket {

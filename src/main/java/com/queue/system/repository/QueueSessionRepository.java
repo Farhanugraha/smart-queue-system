@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface QueSessionRepository extends JpaRepository<QueueSession, Long> {
+public interface QueueSessionRepository extends JpaRepository<QueueSession, Long> {
 
     Optional<QueueSession> findByServiceAndLocalDate(Service service, LocalDate date);
 
